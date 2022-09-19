@@ -5,18 +5,19 @@ import { useEffect, useState } from 'react';
 
 function App() {
   console.log(web3.version);
-  web3.eth.getAccounts().then(console.log);
   console.log(lottery);
   const [manager, setManager] = useState("");
   const [players, setPlayers] = useState([]);
   const [balance, setBalance] = useState("");
   const [value, setValue] = useState("");
+  const [message, setMessage] = useState("");
+  const [winner, setWinner] = useState("");
 
   useEffect(() => {
     fetchManagerAddress();
     fetchPlayersAddress();
     getBalance();
-  }, [manager, balance]);
+  }, [manager, balance, winner]);
 
   const fetchManagerAddress = async () => {
     const manager = await lottery.methods.manager().call();
@@ -33,6 +34,37 @@ function App() {
     setBalance(balance);
   }
 
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    setMessage("Waiting on transaction success...");
+
+    const accounts = await web3.eth.getAccounts();
+
+    await lottery.methods.enter().send({
+      from: accounts[0],
+      value: web3.utils.toWei(value, "ether"),
+    });
+
+    setValue("");
+    setMessage("You have been entered!");
+  };
+
+  const onClick = async (e) => {
+    e.preventDefault();
+    setMessage("Waiting on transaction success...");
+
+    const accounts = await web3.eth.getAccounts();
+
+    await lottery.methods.pickWinner().send({
+      from: accounts[0],
+    });
+
+    const fetchWinner = await lottery.methods.winner().call();
+    setWinner(fetchWinner);
+
+    setMessage("A winner has been picked!");
+  }
+
   return (
     <div className="App">
       <h2>Lottery Contract</h2>
@@ -41,7 +73,7 @@ function App() {
 
       <hr />
 
-      <form>
+      <form onSubmit={onSubmit}>
         <h4>Want to try your luck?</h4>
         <div>
           <label>Amount of ether to enter</label>
@@ -49,6 +81,18 @@ function App() {
         </div>
         <button>Enter</button>
       </form>
+
+      <hr />
+
+      <h4>Ready to pick the winner?</h4>
+      <button onClick={onClick}>Pick a winner!</button>
+      {winner && (
+        <h4>The winner is {winner} !!!</h4>
+      )}
+
+      <hr />
+
+      <h5>{message}</h5>
     </div>
   );
 }
