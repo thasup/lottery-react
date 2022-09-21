@@ -18,6 +18,14 @@ function App() {
     fetchPlayersAddress();
     getBalance();
 
+    const checkManager = async () => {
+      const accounts = await web3.eth.getAccounts();
+      if (accounts[0] === manager) {
+        return setIsManager(true);
+      }
+      return setIsManager(false);
+    };
+
     if (!isManager) {
       checkManager();
     }
@@ -69,18 +77,6 @@ function App() {
 
     setMessage("A winner has been picked!");
   }
-
-  const checkManager = async () => {
-    const accounts = await web3.eth.getAccounts();
-    const firstAccount = accounts[0];
-    console.log({ firstAccount, manager });
-    if (accounts[0] === manager) {
-      console.log("true", isManager);
-      return setIsManager(true);
-    }
-    console.log("false", isManager);
-    return setIsManager(false);
-  };
 
   return (
     <div className="App">
