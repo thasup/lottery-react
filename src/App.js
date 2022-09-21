@@ -4,9 +4,9 @@ import lottery from './lottery';
 import { useEffect, useState } from 'react';
 
 function App() {
-  console.log(web3.version);
-  console.log(lottery);
+  console.log("web3", web3);
   const [manager, setManager] = useState("");
+  const [isManager, setIsManager] = useState(false);
   const [players, setPlayers] = useState([]);
   const [balance, setBalance] = useState("");
   const [value, setValue] = useState("");
@@ -17,7 +17,11 @@ function App() {
     fetchManagerAddress();
     fetchPlayersAddress();
     getBalance();
-  }, [manager, balance, winner]);
+
+    if (!isManager) {
+      checkManager();
+    }
+  }, [manager, balance, winner, isManager, message]);
 
   const fetchManagerAddress = async () => {
     const manager = await lottery.methods.manager().call();
@@ -37,15 +41,16 @@ function App() {
   const onSubmit = async (e) => {
     e.preventDefault();
     setMessage("Waiting on transaction success...");
+    const amount = value;
+    setValue("");
 
     const accounts = await web3.eth.getAccounts();
 
     await lottery.methods.enter().send({
       from: accounts[0],
-      value: web3.utils.toWei(value, "ether"),
+      value: web3.utils.toWei(amount, "ether"),
     });
 
-    setValue("");
     setMessage("You have been entered!");
   };
 
@@ -65,10 +70,23 @@ function App() {
     setMessage("A winner has been picked!");
   }
 
+  const checkManager = async () => {
+    const accounts = await web3.eth.getAccounts();
+    const firstAccount = accounts[0];
+    console.log({ firstAccount, manager });
+    if (accounts[0] === manager) {
+      console.log("true", isManager);
+      return setIsManager(true);
+    }
+    console.log("false", isManager);
+    return setIsManager(false);
+  };
+
   return (
     <div className="App">
       <h2>Lottery Contract</h2>
       <p>This contract is managed by {manager}</p>
+      <p>It deployed on Goerli test network</p>
       <p>There are currently {players.length} people entered, competing to win {web3.utils.fromWei(balance, "ether")} ether!</p>
 
       <hr />
@@ -76,7 +94,7 @@ function App() {
       <form onSubmit={onSubmit}>
         <h4>Want to try your luck?</h4>
         <div>
-          <label>Amount of ether to enter</label>
+          <label>Amount of ether to enter (at least 0.01 ether)</label>
           <input value={value} onChange={(e) => setValue(e.target.value)} />
         </div>
         <button>Enter</button>
@@ -84,13 +102,19 @@ function App() {
 
       <hr />
 
-      <h4>Ready to pick the winner?</h4>
-      <button onClick={onClick}>Pick a winner!</button>
-      {winner && (
-        <h4>The winner is {winner} !!!</h4>
+      {isManager && (
+        <>
+          <h4>Ready to pick the winner?</h4>
+          <button onClick={onClick}>Pick a winner!</button>
+
+          {winner && (
+            <h4>The winner is {winner} !!!</h4>
+          )}
+          <hr />
+        </>
       )}
 
-      <hr />
+
 
       <h5>{message}</h5>
     </div>
