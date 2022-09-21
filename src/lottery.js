@@ -1,72 +1,57 @@
 import web3 from "./web3";
 
-const address = '0x4A0ed957EC5A9C64Ed5cD4745Be6962903041D48';
+const address = '0x5A6dc3189B8394A905298e30b7Cc0E74bf9D179C';
 
 const abi = [
   {
-    constant: true,
     inputs: [],
-    name: "manager",
-    outputs: [
-      {
-        name: "",
-        type: "address"
-      }
-    ],
-    payable: false,
-    stateMutability: "view",
-    type: "function"
-  },
-  {
-    constant: false,
-    inputs: [],
-    name: "pickWinner",
-    outputs: [],
-    payable: false,
     stateMutability: "nonpayable",
-    type: "function"
+    type: "constructor"
   },
   {
-    constant: true,
-    inputs: [],
-    name: "winner",
-    outputs: [
-      {
-        name: "",
-        type: "address"
-      }
-    ],
-    payable: false,
-    stateMutability: "view",
-    type: "function"
-  },
-  {
-    constant: false,
     inputs: [],
     name: "enter",
     outputs: [],
-    payable: true,
     stateMutability: "payable",
     type: "function"
   },
   {
-    constant: true,
     inputs: [],
     name: "getAllPlayers",
     outputs: [
       {
+        internalType: "address payable[]",
         name: "",
         type: "address[]"
       }
     ],
-    payable: false,
     stateMutability: "view",
     type: "function"
   },
   {
-    constant: true,
+    inputs: [],
+    name: "manager",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address"
+      }
+    ],
+    stateMutability: "view",
+    type: "function"
+  },
+  {
+    inputs: [],
+    name: "pickWinner",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function"
+  },
+  {
     inputs: [
       {
+        internalType: "uint256",
         name: "",
         type: "uint256"
       }
@@ -74,19 +59,26 @@ const abi = [
     name: "players",
     outputs: [
       {
+        internalType: "address payable",
         name: "",
         type: "address"
       }
     ],
-    payable: false,
     stateMutability: "view",
     type: "function"
   },
   {
     inputs: [],
-    payable: false,
-    stateMutability: "nonpayable",
-    type: "constructor"
+    name: "winner",
+    outputs: [
+      {
+        internalType: "address payable",
+        name: "",
+        type: "address"
+      }
+    ],
+    stateMutability: "view",
+    type: "function"
   }
 ];
 
